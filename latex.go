@@ -17,6 +17,8 @@ package blackfriday
 
 import (
 	"bytes"
+
+	"github.com/russross/blackfriday/stringutil"
 )
 
 // Latex is a type that implements the Renderer interface for LaTeX output.
@@ -269,9 +271,7 @@ func replacement(c byte) string {
 }
 
 func escapeSpecialChars(out *bytes.Buffer, text []byte) {
-	for _, c := range text {
-		out.Write([]byte(replacement(c)))
-	}
+	out.Write([]byte(stringutil.Latexize(string(text))))
 }
 
 func (options *Latex) Entity(out *bytes.Buffer, entity []byte) {
