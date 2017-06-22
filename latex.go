@@ -258,33 +258,19 @@ func (options *Latex) FootnoteRef(out *bytes.Buffer, ref []byte, id int) {
 
 }
 
-func needsBackslash(c byte) bool {
-	for _, r := range []byte("_{}%$&\\~#") {
-		if c == r {
-			return true
-		}
+func replacement(c byte) string {
+	switch c {
+	case '_', '{', '}', '%', '$', '&', '~', '#':
+		return string([]byte{'\\', c})
+	case '\\':
+		return "\\textbackslash{}"
 	}
-	return false
+	return string(c)
 }
 
 func escapeSpecialChars(out *bytes.Buffer, text []byte) {
-	for i := 0; i < len(text); i++ {
-		// directly copy normal characters
-		org := i
-
-		for i < len(text) && !needsBackslash(text[i]) {
-			i++
-		}
-		if i > org {
-			out.Write(text[org:i])
-		}
-
-		// escape a character
-		if i >= len(text) {
-			break
-		}
-		out.WriteByte('\\')
-		out.WriteByte(text[i])
+	for _, c := range text {
+		out.Write([]byte(replacement(c)))
 	}
 }
 
