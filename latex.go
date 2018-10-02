@@ -17,6 +17,7 @@ package blackfriday
 
 import (
 	"bytes"
+	"strings"
 
 	"github.com/russross/blackfriday/stringutil"
 )
@@ -41,16 +42,17 @@ func (options *Latex) GetFlags() int {
 }
 
 // render code chunks using verbatim, or listings if we have a language
-func (options *Latex) BlockCode(out *bytes.Buffer, text []byte, lang string) {
-	if lang == "" {
+func (options *Latex) BlockCode(out *bytes.Buffer, text []byte, info string) {
+	if info == "" {
 		out.WriteString("\n\\begin{verbatim}\n")
 	} else {
+		lang := strings.Fields(info)[0]
 		out.WriteString("\n\\begin{lstlisting}[language=")
 		out.WriteString(lang)
 		out.WriteString("]\n")
 	}
 	out.Write(text)
-	if lang == "" {
+	if info == "" {
 		out.WriteString("\n\\end{verbatim}\n")
 	} else {
 		out.WriteString("\n\\end{lstlisting}\n")
